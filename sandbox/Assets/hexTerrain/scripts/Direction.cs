@@ -6,9 +6,11 @@ namespace hexwork
 {
     public enum Direction 
     {
-        N,
+        NE,
+        NW,
+        SE,
+        SW,
         E,
-        S,
         W,
         UP,
         DOWN
