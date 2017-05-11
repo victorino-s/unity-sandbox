@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace hexwork 
+namespace hexwork
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
     public class Chunk : MonoBehaviour
     {
-        HexBloc[,,] blocs = new HexBloc[chunkSize, chunkSize, chunkSize];
+
         public static int chunkSize = 16;
         public bool update = true;
 
@@ -18,6 +18,7 @@ namespace hexwork
         public World world;
         public WorldPos pos;
 
+        HexBloc[,,] blocs = new HexBloc[chunkSize, chunkSize, chunkSize];
         //Use this for initialization
         void Start()
         {
@@ -28,10 +29,37 @@ namespace hexwork
         //Update is called once per frame
         void Update()
         {
+            if (update)
+            {
+                update = false;
+                UpdateChunk();
+            }
         }
-        public HexBloc GetBlock(int x, int y, int z)
+        public HexBloc GetBloc(int x, int y, int z)
         {
-            return blocs[x, y, z];
+            if (InRange(x) && InRange(y) && InRange(z))
+                return blocs[x, y, z];
+            return world.GetHexBloc(pos.x + x, pos.y + y, pos.z + z);
+        }
+
+        public void SetBloc(int x, int y, int z, HexBloc bloc)
+        {
+            if (InRange(x) && InRange(y) && InRange(z))
+            {
+                blocs[x, y, z] = bloc;
+            }
+            else
+            {
+                world.SetBloc(pos.x + x, pos.y + y, pos.z + z, bloc);
+            }
+        }
+
+        public static bool InRange(int index)
+        {
+            if (index < 0 || index >= chunkSize)
+                return false;
+
+            return true;
         }
         //Updates the chunk based on its contents
         void UpdateChunk()

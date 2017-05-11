@@ -44,8 +44,36 @@ namespace hexwork
             newChunk.world = this;
 
             chunks.Add(worldPos, newChunk);
+            // Generation de la grille de blocs
+                // Mettre des floats
+            for(int xi = 0; xi < 16; xi++)
+            {
+                for(int yi = 0; yi < 16; yi++)
+                {
+                    for(int zi = 0; zi < 16; zi++)
+                    {
+                        if(yi <= 7)
+                        {
+                            SetBloc(x + xi, y + yi, z + zi, new HexBlocGrass());
+                        }
+                        else
+                        {
+                            SetBloc(x + xi, y + yi, z + zi, new HexBlocAir());
+                        }
+                    }
+                }
+            }
         }
 
+        public void DestroyChunk(int x, int y, int z)
+        {
+            Chunk chunk = null;
+            if(chunks.TryGetValue(new WorldPos(x,y,z), out chunk))
+            {
+                UnityEngine.Object.Destroy(chunk.gameObject);
+                chunks.Remove(new WorldPos(x, y, z));
+            }
+        }
         public Chunk GetChunk(int x, int y, int z)
         {
             WorldPos pos = new WorldPos();
@@ -56,13 +84,37 @@ namespace hexwork
 
             Chunk containerChunk = null;
             chunks.TryGetValue(pos, out containerChunk);
-            lol();
+
             return containerChunk;
         }
-        
+
+        public void SetBloc(int x, int y, int z, HexBloc bloc)
+        {
+            Chunk chunk = GetChunk(x, y, z);
+
+            if(chunk != null)
+            {
+                chunk.SetBloc(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, bloc);
+                chunk.update = true;
+            }
+        }
+
         public HexBloc GetHexBloc(int x, int y, int z)
         {
-            throw new NotImplementedException();
+            Chunk containerChunk = GetChunk(x, y, z);
+            if(containerChunk != null)
+            {
+                HexBloc bloc = containerChunk.GetBloc(
+                    x - containerChunk.pos.x,
+                    y - containerChunk.pos.y,
+                    z - containerChunk.pos.z);
+
+                return bloc;
+            }
+            else
+            {
+                return new HexBlocAir();
+            }
         }
 
       

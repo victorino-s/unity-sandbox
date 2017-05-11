@@ -29,42 +29,42 @@ namespace hexwork
         public virtual MeshModel HexBlocData(Chunk chunk, int x, int y, int z, MeshModel meshModel)
         {
             meshModel.useRenderDataForCol = true;
-            if (!chunk.GetBlock(x, y + 1, z).IsSolid(Direction.DOWN))
+            if (!chunk.GetBloc(x, y + 1, z).IsSolid(Direction.DOWN))
             {
                 meshModel = FaceDataUp(chunk, x, y, z, meshModel);
             }
 
-            if (!chunk.GetBlock(x, y - 1, z).IsSolid(Direction.UP))
+            if (!chunk.GetBloc(x, y - 1, z).IsSolid(Direction.UP))
             {
                 meshModel = FaceDataDown(chunk, x, y, z, meshModel);
             }
             // NW
-            if (!chunk.GetBlock(x - 1, y, z + 1).IsSolid(Direction.SE))
+            if (!chunk.GetBloc(x - 1, y, z + 1).IsSolid(Direction.SE))
             {
                 meshModel = FaceDataNorthWest(chunk, x, y, z, meshModel);
             }
             // NE
-            if (!chunk.GetBlock(x + 1, y, z + 1).IsSolid(Direction.SW))
+            if (!chunk.GetBloc(x + 1, y, z + 1).IsSolid(Direction.SW))
             {
                 meshModel = FaceDataNorthEast(chunk, x, y, z, meshModel);
             }
             // W
-            if (!chunk.GetBlock(x - 1, y, z).IsSolid(Direction.E))
+            if (!chunk.GetBloc(x - 1, y, z).IsSolid(Direction.E))
             {
                 meshModel = FaceDataWest(chunk, x, y, z, meshModel);
             }
             // E
-            if (!chunk.GetBlock(x + 1, y, z).IsSolid(Direction.W))
+            if (!chunk.GetBloc(x + 1, y, z).IsSolid(Direction.W))
             {
                 meshModel = FaceDataEast(chunk, x, y, z, meshModel);
             }
             // SW
-            if (!chunk.GetBlock(x - 1, y, z - 1).IsSolid(Direction.NE))
+            if (!chunk.GetBloc(x - 1, y, z - 1).IsSolid(Direction.NE))
             {
                 meshModel = FaceDataSouthWest(chunk, x, y, z, meshModel);
             }
             // SE
-            if (!chunk.GetBlock(x + 1, y, z - 1).IsSolid(Direction.NW))
+            if (!chunk.GetBloc(x + 1, y, z - 1).IsSolid(Direction.NW))
             {
                 meshModel = FaceDataSouthEast(chunk, x, y, z, meshModel);
             }
