@@ -37,7 +37,8 @@ namespace hexwork
         {
             WorldPos worldPos = new WorldPos(x, y, z);
 
-            GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(x, y, z), Quaternion.Euler(Vector3.zero)) as GameObject;
+            float zOffset = (z != 0 ? z * .75f : z);
+            GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(x, y, zOffset), Quaternion.Euler(Vector3.zero)) as GameObject;
             Chunk newChunk = newChunkObject.GetComponent<Chunk>();
 
             newChunk.pos = worldPos;
