@@ -16,7 +16,7 @@ namespace hexwork
         MeshCollider coll;
 
         public World world;
-        public WorldPos pos;
+        public Vector3 pos;
 
         HexBloc[,,] blocs = new HexBloc[chunkSize, chunkSize, chunkSize];
         //Use this for initialization
@@ -35,18 +35,18 @@ namespace hexwork
                 UpdateChunk();
             }
         }
-        public HexBloc GetBloc(int x, int y, int z)
+        public HexBloc GetBloc(float x, float y, float z)
         {
             if (InRange(x) && InRange(y) && InRange(z))
-                return blocs[x, y, z];
+                return blocs[(int)x, (int)y, (int)z];
             return world.GetHexBloc(pos.x + x, pos.y + y, pos.z + z);
         }
 
-        public void SetBloc(int x, int y, int z, HexBloc bloc)
+        public void SetBloc(float x, float y, float z, HexBloc bloc)
         {
             if (InRange(x) && InRange(y) && InRange(z))
             {
-                blocs[x, y, z] = bloc;
+                blocs[(int)x, (int)y, (int)z] = bloc;
             }
             else
             {
@@ -54,7 +54,7 @@ namespace hexwork
             }
         }
 
-        public static bool InRange(int index)
+        public static bool InRange(float index)
         {
             if (index < 0 || index >= chunkSize)
                 return false;
@@ -71,16 +71,11 @@ namespace hexwork
                 {
                     for (int z = 0; z < chunkSize; z++)
                     {
-                        meshModel = blocs[x, y, z].HexBlocData(this, x, y, z, meshModel);
+                        blocs[x, y, z].FillMeshData(this, x, y, z, ref meshModel);
                     }
                 }
             }
-            RenderMesh(meshModel);
-        }
-        //Sends the calculated mesh information
-        //to the mesh and collision components
-        void RenderMesh(MeshModel meshModel)
-        {
+
             filter.mesh.Clear();
             filter.mesh.vertices = meshModel.vertices.ToArray();
             filter.mesh.triangles = meshModel.triangles.ToArray();

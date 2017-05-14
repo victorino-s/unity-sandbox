@@ -12,9 +12,9 @@ namespace hexwork
 
         }
 
-        public override MeshModel HexBlocData(Chunk chunk, int x, int y, int z, MeshModel meshModel)
+        public override void FillMeshData(Chunk chunk, int x, int y, int z, ref MeshModel meshModel)
         {
-            return meshModel;
+            
         }
 
         public override bool IsSolid(Direction direction)

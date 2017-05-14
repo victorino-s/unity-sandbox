@@ -16,10 +16,6 @@ namespace hexwork
     {
         #region fields
         const float tileSize = 0.25f;
-
-        public const float outerRadius = .5f;
-
-        public const float innerRadius = outerRadius * 0.866025404f;
         #endregion
 
         #region constructors
@@ -30,53 +26,52 @@ namespace hexwork
         #endregion
 
         #region blocdata
-        public virtual MeshModel HexBlocData(Chunk chunk, int x, int y, int z, MeshModel meshModel)
+        public virtual void FillMeshData(Chunk chunk, int x, int y, int z, ref MeshModel meshModel)
         {
-             // Hexagone Alining
-            float nx = (x + z * 0.5f - z / 2);
-            float nz = z * .75f;
+            // Hexagone Alining
+            float nx = (x + z * 0.5f - z / 2);// * (0.866025404f * 2f);
+            float nz = z * .5f * 1.5f;
 
             meshModel.useRenderDataForCol = true;
             if (!chunk.GetBloc(x, y + 1, z).IsSolid(Direction.DOWN))
             {
-                meshModel = FaceDataUp(chunk, nx, y, nz, meshModel);
+                FillMesh_FaceUp(chunk, nx, y, nz,ref meshModel);
             }
 
             if (!chunk.GetBloc(x, y - 1, z).IsSolid(Direction.UP))
             {
-                meshModel = FaceDataDown(chunk, nx, y, nz, meshModel);
+                FillMesh_FaceDown(chunk, nx, y, nz, ref meshModel);
             }
             // NW
             if (!chunk.GetBloc(x - 1, y, z + 1).IsSolid(Direction.SE))
             {
-                meshModel = FaceDataNorthWest(chunk, nx, y, nz, meshModel);
+                FillMesh_NW(chunk, nx, y, nz, ref meshModel);
             }
             // NE
             if (!chunk.GetBloc(x + 1, y, z + 1).IsSolid(Direction.SW))
             {
-                meshModel = FaceDataNorthEast(chunk, nx, y, nz, meshModel);
+                FillMesh_NE(chunk, nx, y, nz, ref meshModel);
             }
             // W
             if (!chunk.GetBloc(x - 1, y, z).IsSolid(Direction.E))
             {
-                meshModel = FaceDataWest(chunk, nx, y, nz, meshModel);
+                FillMesh_W(chunk, nx, y, nz, ref meshModel);
             }
             // E
             if (!chunk.GetBloc(x + 1, y, z).IsSolid(Direction.W))
             {
-                meshModel = FaceDataEast(chunk, nx, y, nz, meshModel);
+                FillMesh_E(chunk, nx, y, nz, ref meshModel);
             }
             // SW
             if (!chunk.GetBloc(x - 1, y, z - 1).IsSolid(Direction.NE))
             {
-                meshModel = FaceDataSouthWest(chunk, nx, y, nz, meshModel);
+                FillMesh_SW(chunk, nx, y, nz, ref meshModel);
             }
             // SE
             if (!chunk.GetBloc(x + 1, y, z - 1).IsSolid(Direction.NW))
             {
-                meshModel = FaceDataSouthEast(chunk, nx, y, nz, meshModel);
+                FillMesh_SE(chunk, nx, y, nz, ref meshModel);
             }
-            return meshModel;
         }
 
         /*
@@ -88,28 +83,13 @@ namespace hexwork
         public virtual bool IsSolid(Direction direction)
         {
             return true;
-            /*switch(direction){
-              case Direction.north:
-                  return true;
-              case Direction.east:
-                  return true;
-              case Direction.south:
-                  return true;
-              case Direction.west:
-                  return true;
-              case Direction.up:
-                  return true;
-              case Direction.down:
-                  return true;
-          }
-          return false;*/
         }
         #endregion
         #region FacesData
 
         // Hex Faces
-        protected virtual MeshModel FaceDataUp
-         (Chunk chunk, float x, int y, float z, MeshModel meshModel)
+        protected virtual void FillMesh_FaceUp
+         (Chunk chunk, float x, int y, float z,ref MeshModel meshModel)
         {
             meshModel.AddVertex(new Vector3(x, y + 0.5f, z)); // up face origin (center) : 0 - up
             meshModel.AddVertex(new Vector3(x, y + 0.5f, z + 0.5f)); // 1 - up
@@ -123,11 +103,10 @@ namespace hexwork
             meshModel.AddHexFacesTriangles();
 
             meshModel.uvs.AddRange(HexFaceUVs(Direction.UP));
-            return meshModel;
         }
 
-        protected virtual MeshModel FaceDataDown
-         (Chunk chunk, float x, int y, float z, MeshModel meshModel)
+        protected virtual void FillMesh_FaceDown
+         (Chunk chunk, float x, int y, float z, ref MeshModel meshModel)
         {
             // Down face = mirror up face
             meshModel.AddVertex(new Vector3(x, y - 0.5f, z)); // down face origin (center) : 0 - down
@@ -139,11 +118,10 @@ namespace hexwork
             meshModel.AddVertex(new Vector3(x - 0.5f, y - 0.5f, z - 0.25f)); // 6 - down
             meshModel.AddHexFacesTriangles();
             meshModel.uvs.AddRange(HexFaceUVs(Direction.DOWN));
-            return meshModel;
         }
 
         // Quad Faces
-        protected virtual MeshModel FaceDataNorthWest(Chunk chunk, float x, int y, float z, MeshModel meshModel)
+        protected virtual void FillMesh_NW(Chunk chunk, float x, int y, float z, ref MeshModel meshModel)
         {
             meshModel.AddVertex(new Vector3(x, y - 0.5f, z + 0.5f)); // 4 - down
             meshModel.AddVertex(new Vector3(x, y + 0.5f, z + 0.5f)); // 1 - up
@@ -152,9 +130,8 @@ namespace hexwork
             meshModel.AddQuadFacesTriangles();
 
             meshModel.uvs.AddRange(QuadFaceUVs(Direction.NW));
-            return meshModel;
         }
-        protected virtual MeshModel FaceDataWest(Chunk chunk, float x, int y, float z, MeshModel meshModel)
+        protected virtual void FillMesh_W(Chunk chunk, float x, int y, float z, ref MeshModel meshModel)
         {
             meshModel.AddVertex(new Vector3(x - 0.5f, y - 0.5f, z + 0.25f)); // 5 - down
             meshModel.AddVertex(new Vector3(x - 0.5f, y + 0.5f, z + 0.25f)); // 6- up
@@ -162,10 +139,9 @@ namespace hexwork
             meshModel.AddVertex(new Vector3(x - 0.5f, y - 0.5f, z - 0.25f)); // 6 - down
             meshModel.AddQuadFacesTriangles();
             meshModel.uvs.AddRange(QuadFaceUVs(Direction.W));
-            return meshModel;
         }
 
-        protected virtual MeshModel FaceDataSouthWest(Chunk chunk, float x, int y, float z, MeshModel meshModel)
+        protected virtual void FillMesh_SW(Chunk chunk, float x, int y, float z, ref MeshModel meshModel)
         {
             meshModel.AddVertex(new Vector3(x - 0.5f, y - 0.5f, z - 0.25f)); // 6 - down
             meshModel.AddVertex(new Vector3(x - 0.5f, y + 0.5f, z - 0.25f)); // 5- up
@@ -173,9 +149,8 @@ namespace hexwork
             meshModel.AddVertex(new Vector3(x, y - 0.5f, z - 0.5f)); // 1 - down
             meshModel.AddQuadFacesTriangles();
             meshModel.uvs.AddRange(QuadFaceUVs(Direction.SW));
-            return meshModel;
         }
-        protected virtual MeshModel FaceDataSouthEast(Chunk chunk, float x, int y, float z, MeshModel meshModel)
+        protected virtual void FillMesh_SE(Chunk chunk, float x, int y, float z, ref MeshModel meshModel)
         {
             meshModel.AddVertex(new Vector3(x, y - 0.5f, z - 0.5f)); // 1 - down
             meshModel.AddVertex(new Vector3(x, y + 0.5f, z - 0.5f)); // 4- up
@@ -183,10 +158,9 @@ namespace hexwork
             meshModel.AddVertex(new Vector3(x + 0.5f, y - 0.5f, z - 0.25f)); // 2 - down
             meshModel.AddQuadFacesTriangles();
             meshModel.uvs.AddRange(QuadFaceUVs(Direction.SE));
-            return meshModel;
         }
 
-        protected virtual MeshModel FaceDataEast(Chunk chunk, float x, int y, float z, MeshModel meshModel)
+        protected virtual void FillMesh_E(Chunk chunk, float x, int y, float z, ref MeshModel meshModel)
         {
             meshModel.AddVertex(new Vector3(x + 0.5f, y - 0.5f, z - 0.25f)); // 2 - down
             meshModel.AddVertex(new Vector3(x + 0.5f, y + 0.5f, z - 0.25f)); // 3- up
@@ -194,10 +168,9 @@ namespace hexwork
             meshModel.AddVertex(new Vector3(x + 0.5f, y - 0.5f, z + 0.25f)); // 3 - down
             meshModel.AddQuadFacesTriangles();
             meshModel.uvs.AddRange(QuadFaceUVs(Direction.E));
-            return meshModel;
         }
 
-        protected virtual MeshModel FaceDataNorthEast(Chunk chunk, float x, int y, float z, MeshModel meshModel)
+        protected virtual void FillMesh_NE(Chunk chunk, float x, int y, float z, ref MeshModel meshModel)
         {
             meshModel.AddVertex(new Vector3(x + 0.5f, y - 0.5f, z + 0.25f)); // 3 - down
             meshModel.AddVertex(new Vector3(x + 0.5f, y + 0.5f, z + 0.25f)); // 2- up
@@ -205,7 +178,6 @@ namespace hexwork
             meshModel.AddVertex(new Vector3(x, y - 0.5f, z + 0.5f)); // 4 - down
             meshModel.AddQuadFacesTriangles();
             meshModel.uvs.AddRange(QuadFaceUVs(Direction.NE));
-            return meshModel;
         }
         #endregion
 

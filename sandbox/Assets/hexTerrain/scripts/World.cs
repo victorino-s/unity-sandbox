@@ -10,7 +10,7 @@ namespace hexwork
     {
 
         public string worldName = "world";
-        public Dictionary<WorldPos, Chunk> chunks = new Dictionary<WorldPos, Chunk>();
+        public Dictionary<Vector3, Chunk> chunks = new Dictionary<Vector3, Chunk>();
         public GameObject chunkPrefab;
         // Use this for initialization
         void Start()
@@ -36,17 +36,16 @@ namespace hexwork
         public void CreateChunk(int x, int y, int z)
         {
             WorldPos worldPos = new WorldPos(x, y, z);
+            Vector3 pos = new Vector3(x, y, z);
 
-            float zOffset = (z != 0 ? z * .75f : z);
-            GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(x, y, zOffset), Quaternion.Euler(Vector3.zero)) as GameObject;
+            GameObject newChunkObject = Instantiate(chunkPrefab, new Vector3(x, y, z * 0.75f), Quaternion.Euler(Vector3.zero)) as GameObject;
             Chunk newChunk = newChunkObject.GetComponent<Chunk>();
 
-            newChunk.pos = worldPos;
+            newChunk.pos = pos;
             newChunk.world = this;
 
-            chunks.Add(worldPos, newChunk);
+            chunks.Add(pos, newChunk);
             // Generation de la grille de blocs
-                // Mettre des floats
             for(int xi = 0; xi < 16; xi++)
             {
                 for(int yi = 0; yi < 16; yi++)
@@ -69,15 +68,15 @@ namespace hexwork
         public void DestroyChunk(int x, int y, int z)
         {
             Chunk chunk = null;
-            if(chunks.TryGetValue(new WorldPos(x,y,z), out chunk))
+            if(chunks.TryGetValue(new Vector3(x,y,z), out chunk))
             {
                 UnityEngine.Object.Destroy(chunk.gameObject);
-                chunks.Remove(new WorldPos(x, y, z));
+                chunks.Remove(new Vector3(x, y, z));
             }
         }
-        public Chunk GetChunk(int x, int y, int z)
+        public Chunk GetChunk(float x, float y, float z)
         {
-            WorldPos pos = new WorldPos();
+            Vector3 pos = new Vector3();
             float multiple = Chunk.chunkSize;
             pos.x = Mathf.FloorToInt(x / multiple) * Chunk.chunkSize;
             pos.y = Mathf.FloorToInt(y / multiple) * Chunk.chunkSize;
@@ -89,7 +88,7 @@ namespace hexwork
             return containerChunk;
         }
 
-        public void SetBloc(int x, int y, int z, HexBloc bloc)
+        public void SetBloc(float x, float y, float z, HexBloc bloc)
         {
             Chunk chunk = GetChunk(x, y, z);
 
@@ -100,8 +99,9 @@ namespace hexwork
             }
         }
 
-        public HexBloc GetHexBloc(int x, int y, int z)
+        public HexBloc GetHexBloc(float x, float y, float z)
         {
+
             Chunk containerChunk = GetChunk(x, y, z);
             if(containerChunk != null)
             {

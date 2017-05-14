@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/hexTerrain/hexScene_1.unity
+- path: Assets/hexGrid/hexGrid_1.unity
   isLoaded: 1
   isActive: 1
