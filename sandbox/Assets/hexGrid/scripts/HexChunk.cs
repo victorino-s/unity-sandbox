@@ -14,7 +14,7 @@ namespace hexgrid
         List<int> triangles;
 
         public int chunkSize = 6;
-        HexCell[,,] chunkCells;
+        public HexCell[,,] chunkCells;
 
         void Awake()
         {
@@ -34,6 +34,22 @@ namespace hexgrid
                     for (int x = 0; x < chunkSize; x++)
                     {
                         CreateCell(x, y, z);
+                    }
+                }
+            }
+
+            //UpdateMesh();
+        }
+
+        private void UpdateMesh()
+        {
+            for (int z = 0; z < chunkSize; z++)
+            {
+                for (int y = 0; y < chunkSize; y++)
+                {
+                    for (int x = 0; x < chunkSize; x++)
+                    {
+                        chunkCells[x, y, z].UpdateMeshData(x, y, z, this);
                     }
                 }
             }
@@ -75,9 +91,6 @@ namespace hexgrid
             cell.position = position;
             cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, y, z);
 
-            if (cell.chunkPosition == null)
-                cell.chunkPosition = new Vector3(x, y, z);
-
             Debug.Log("Cell[" + x + "," + y + "," + z + "] | position : " + cell.position + " || coordinates : " + cell.coordinates);
         }
 
@@ -93,12 +106,10 @@ namespace hexgrid
         // Use this for initialization
         void Start()
         {
-            FindBlocFacesToRender(chunkCells);
-            CorrectBorduresBlocs(chunkCells);
             Triangulate(chunkCells);
         }
 
-        void CorrectBorduresBlocs(HexCell[,,] cells)
+        void CorrectBorduresBlocs(ref HexCell[,,] cells)
         {
             for(int z = 0; z < chunkSize; z++)
             {
@@ -175,7 +186,10 @@ namespace hexgrid
                         if(cells[x, y, z].chunkPosition == null)
                             cells[x, y, z].chunkPosition = new Vector3(x, y, z);
 
-                        cells[x, y, z].Triangulate(this);
+                            cells[x, y, z].UpdateMeshData(x, y, z, this);
+                        
+                        //cells[x, y, z].Triangulate(this);
+                        
                     }
                 }
             }
@@ -186,7 +200,7 @@ namespace hexgrid
             meshCollider.sharedMesh = hexMesh;
         }
 
-        void FindBlocFacesToRender(HexCell[,,] cells)
+        void FindBlocFacesToRender(ref HexCell[,,] cells)
         {
             for(int z = 0; z < chunkSize; z++)
             {
@@ -219,6 +233,12 @@ namespace hexgrid
         public HexCell GetCellFromArray(int x, int y, int z)
         {
             return chunkCells[x, y, z];
+        }
+
+        public HexCell GetCellFromArray(float x, float y, float z)
+        {
+            Debug.Log(x + z * 2 + " " + y + " " + z);
+            return chunkCells[(int)x, (int)y, (int)z];
         }
     }
 }
