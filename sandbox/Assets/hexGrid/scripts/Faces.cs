@@ -7,13 +7,14 @@ namespace hexgrid
 {
     public enum Faces
     {
+        All,
         Up,
         Down,
         NE,
         E,
         SE,
-        SW,
+        NW,
         W,
-        NW
+        SW
     }
 }
